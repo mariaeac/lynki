@@ -23,7 +23,7 @@ public class Url {
     @URL(message = "A URL original deve ser uma URL válida!")
     private String originUrl;
 
-    @Indexed(name = "expireAtIndex", expireAfter = "0")
+    @Indexed(expireAfter = "0")
     private Instant expiresAt;
 
     @Min(value = 0, message = "Contador de cliques não pode ter valor negativo.")
