@@ -35,15 +35,13 @@ public class UrlService {
         urlRepository.save(url);
 
         String base = httpRequest.getRequestURL().toString().replace(httpRequest.getRequestURI(), "");
-        String redirectLink = base + "/" + shortId;
+        String redirectLink = base + "/api/v1/url/" + shortId;
         return new UrlResponseDTO(redirectLink, url.getClickCount());
     }
 
     public Url redirectOriginUrl(String shortId) {
         return urlRepository.findById(shortId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Url não encontrada!"));
     }
-
-
 
 
     private String createUniqueID() {
