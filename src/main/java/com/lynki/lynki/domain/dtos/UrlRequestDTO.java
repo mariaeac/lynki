@@ -1,4 +1,4 @@
-package com.lynki.lynki.model.dtos;
+package com.lynki.lynki.domain.dtos;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

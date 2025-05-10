@@ -1,9 +1,9 @@
 package com.lynki.lynki.services;
 
 
-import com.lynki.lynki.model.Url;
-import com.lynki.lynki.model.dtos.UrlRequestDTO;
-import com.lynki.lynki.model.dtos.UrlResponseDTO;
+import com.lynki.lynki.domain.Url;
+import com.lynki.lynki.domain.dtos.UrlRequestDTO;
+import com.lynki.lynki.domain.dtos.UrlResponseDTO;
 import com.lynki.lynki.repository.UrlRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.text.RandomStringGenerator;

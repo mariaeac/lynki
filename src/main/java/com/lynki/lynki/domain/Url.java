@@ -1,4 +1,4 @@
-package com.lynki.lynki.model;
+package com.lynki.lynki.domain;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

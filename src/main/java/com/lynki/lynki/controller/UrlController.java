@@ -1,8 +1,8 @@
 package com.lynki.lynki.controller;
 
-import com.lynki.lynki.model.Url;
-import com.lynki.lynki.model.dtos.UrlRequestDTO;
-import com.lynki.lynki.model.dtos.UrlResponseDTO;
+import com.lynki.lynki.domain.Url;
+import com.lynki.lynki.domain.dtos.UrlRequestDTO;
+import com.lynki.lynki.domain.dtos.UrlResponseDTO;
 import com.lynki.lynki.services.UrlService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
