@@ -4,6 +4,7 @@ import com.lynki.lynki.domain.Url;
 import com.lynki.lynki.domain.User;
 import com.lynki.lynki.domain.dtos.UrlRequestDTO;
 import com.lynki.lynki.domain.dtos.UrlResponseDTO;
+import com.lynki.lynki.domain.dtos.UserUrlsResponseDTO;
 import com.lynki.lynki.exceptions.UserException;
 import com.lynki.lynki.repository.UrlRepository;
 import com.lynki.lynki.repository.UserRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,6 +55,20 @@ public class AuthenticatedUrlService {
 
         String redirectUrl = urlUtils.buildRedirectLink(request, id);
         return new UrlResponseDTO(redirectUrl, url.getClickCount());
+    }
+
+
+    public List<UserUrlsResponseDTO> getUrlsFromUser(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserException.UserNotFound());
+
+        List<Url> urls = urlRepository.findByUserId(userId);
+
+        if (urls.isEmpty()) {
+            return null;
+        }
+
+        List<UserUrlsResponseDTO> userUrls = urls.stream().map(url -> new UserUrlsResponseDTO(url.getOriginUrl(), url.getId(), url.getExpiresAt(), url.getClickCount())).toList();
+        return userUrls;
 
     }
 }
