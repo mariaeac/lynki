@@ -21,8 +21,16 @@ public class GlobalExceptionHandler {
         return buildResponse(exception, HttpStatus.CONFLICT, "USERNAME_ALREADY_EXISTS");
     }
 
+    @ExceptionHandler(UserException.UserNotFound.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UserException.UserNotFound exception) {
+        return buildResponse(exception, HttpStatus.NOT_FOUND, "USER_NOT_FOUND");
+    }
+
+
     private ResponseEntity<ErrorResponse> buildResponse(RuntimeException exception, HttpStatus status, String code)  {
         ErrorResponse errorResponse = new ErrorResponse(Instant.now(), status.value(), status.getReasonPhrase(), exception.getMessage(), code);
         return new ResponseEntity<>(errorResponse, status);
     }
+
+
 }
