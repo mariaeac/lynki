@@ -29,7 +29,7 @@ public class Url {
     @Min(value = 0, message = "Contador de cliques não pode ter valor negativo.")
     private Long clickCount;
 
-    private UUID userId;
+    private String userId;
 
     @CreatedDate
     private Instant createdAt;
@@ -40,7 +40,7 @@ public class Url {
     public Url() {
 
     }
-    public Url(String id, String originUrl, Instant expiresAt, Long clickCount, UUID userId, Instant createdAt, Instant lastModifiedAt) {
+    public Url(String id, String originUrl, Instant expiresAt, Long clickCount, String userId, Instant createdAt, Instant lastModifiedAt) {
         this.id = id;
         this.originUrl = originUrl;
         this.expiresAt = expiresAt;
@@ -82,11 +82,11 @@ public class Url {
         this.clickCount = clickCount;
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
