@@ -4,13 +4,19 @@ public class UserException {
 
     public static class UsernameAlreadyExists extends RuntimeException {
         public UsernameAlreadyExists(String username) {
-            super("Username " + username + " already exists");
+            super("Usuário " + username + " já cadastrado");
         }
     }
 
     public static class UsernameNotFound extends RuntimeException {
         public UsernameNotFound(String username) {
-            super("Username " + username + " not found");
+            super("Usuário " + username + " não encontrado");
+        }
+    }
+
+    public static class UserNotFound extends RuntimeException {
+        public UserNotFound() {
+            super("Usuário não encontrado!");
         }
     }
 
