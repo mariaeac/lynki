@@ -41,7 +41,7 @@ public class AuthService implements UserDetailsService {
         }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerUser.password());
-        userRepository.save(new User(registerUser.username(),encryptedPassword, registerUser.email(), UserRole.ADMIN));
+        userRepository.save(new User(registerUser.username(),encryptedPassword, registerUser.email(), UserRole.USER));
 
     }
 
@@ -49,6 +49,7 @@ public class AuthService implements UserDetailsService {
 
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password());
         Authentication authentication = authenticationManager.authenticate(usernamePassword);
+
         String token = tokenService.generateToken((User) authentication.getPrincipal());
 
         return new LoginResponseDTO(token);
