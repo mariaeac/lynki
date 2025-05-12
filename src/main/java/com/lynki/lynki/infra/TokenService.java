@@ -23,7 +23,7 @@ public class TokenService {
 
             Algorithm algorithm = Algorithm.HMAC256(secret);
             String jwtToken = JWT.create().withIssuer("lynki-api")
-                    .withSubject(user.getUsername())
+                    .withSubject(user.getId())
                     .withExpiresAt(generateExpirationTime())
                     .sign(algorithm);
             return jwtToken;
@@ -36,7 +36,7 @@ public class TokenService {
         try {
 
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.require(algorithm).withIssuer("lynki-api").build().verify(token).getSubject();
+             return JWT.require(algorithm).withIssuer("lynki-api").build().verify(token).getSubject();
 
         } catch (JWTVerificationException e) {
             return "";
