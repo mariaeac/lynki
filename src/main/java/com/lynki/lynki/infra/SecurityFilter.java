@@ -1,5 +1,6 @@
 package com.lynki.lynki.infra;
 
+import com.lynki.lynki.domain.User;
 import com.lynki.lynki.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,10 +9,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -29,8 +32,11 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (token != null) {
 
             String subject = tokenService.validateToken(token);
-            UserDetails user = userRepository.findByUsername(token);
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            User user = userRepository.findById(subject)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
