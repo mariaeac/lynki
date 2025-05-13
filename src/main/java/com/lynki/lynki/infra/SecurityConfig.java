@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/url/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers("/v3/api-docs").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/url/auth").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilterChain, UsernamePasswordAuthenticationFilter.class);
