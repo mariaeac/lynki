@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.lynki.lynki.domain.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -46,6 +47,11 @@ public class TokenService {
     private Instant generateExpirationTime() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
 
+    }
+
+    public String getIdFromToken(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return user.getId();
     }
 
 
