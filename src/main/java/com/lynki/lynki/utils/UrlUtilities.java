@@ -30,4 +30,9 @@ public class UrlUtilities {
         return baseUrl + "/api/v1/url/" + shortId;
     }
 
+    public String buildRedirectAuthLink(HttpServletRequest request, String shortId) {
+        String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
+        return baseUrl + "/api/v1/url/auth/" + shortId;
+    }
+
 }

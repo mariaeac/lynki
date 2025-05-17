@@ -5,6 +5,7 @@ import com.lynki.lynki.domain.User;
 import com.lynki.lynki.domain.dtos.UrlRequestDTO;
 import com.lynki.lynki.domain.dtos.UrlResponseDTO;
 import com.lynki.lynki.domain.dtos.UserUrlsResponseDTO;
+import com.lynki.lynki.exceptions.UrlException;
 import com.lynki.lynki.exceptions.UserException;
 import com.lynki.lynki.repository.UrlRepository;
 import com.lynki.lynki.repository.UserRepository;
@@ -44,18 +45,30 @@ public class AuthenticatedUrlService {
 
         Instant expirationTime = Instant.now().plusSeconds(urlRequest.expirationTime());
 
-
         Url url = new Url();
         url.setId(id);
-        url.setOriginUrl(request.getRequestURI());
+        url.setOriginUrl(urlRequest.url());
         url.setClickCount(0L);
         url.setExpiresAt(Instant.from(expirationTime));
         url.setUserId(userId);
         urlRepository.save(url);
 
-        String redirectUrl = urlUtils.buildRedirectLink(request, id);
+        String redirectUrl = urlUtils.buildRedirectAuthLink(request,id);
         return new UrlResponseDTO(redirectUrl, url.getClickCount());
     }
+
+    public Url redirectOriginUrl(String shortId) {
+        Url originUrl = urlRepository.findById(shortId).orElseThrow(() -> new UrlException.UrlNotFoundException());
+        if (originUrl != null) {
+            Long clickCountAux = originUrl.getClickCount();
+            originUrl.setClickCount(clickCountAux + 1);
+            urlRepository.save(originUrl);
+        }
+
+        return originUrl;
+    }
+
+
 
 
     public List<UserUrlsResponseDTO> getUrlsFromUser(String userId) {
@@ -69,6 +82,7 @@ public class AuthenticatedUrlService {
 
         List<UserUrlsResponseDTO> userUrls = urls.stream().map(url -> new UserUrlsResponseDTO(url.getOriginUrl(), url.getId(), url.getExpiresAt(), url.getClickCount())).toList();
         return userUrls;
-
     }
+
+
 }
