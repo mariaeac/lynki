@@ -8,6 +8,12 @@ public class UserException {
         }
     }
 
+    public static class EmailAlreadyExists extends RuntimeException {
+        public EmailAlreadyExists() {
+            super("Email já cadastrado");
+        }
+    }
+
     public static class UsernameNotFound extends RuntimeException {
         public UsernameNotFound(String username) {
             super("Usuário " + username + " não encontrado");
