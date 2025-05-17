@@ -9,6 +9,10 @@ import com.lynki.lynki.services.AuthenticatedUrlService;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +79,11 @@ public class AuthenticatedUrlController {
     }
 
 
+    @Operation(summary = "Redirecionar para a URL original (usuários autenticados)", description = "Redireciona para a URL original a partir do identificador encurtado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "Redirecionamento para a URL original", content = @Content),
+            @ApiResponse(responseCode = "404", description = "URL não encontrada", content = @Content)
+    })
 
     @GetMapping("/{id}")
     public ResponseEntity<Void> redirectAuthUrl(@PathVariable String id) {
@@ -83,8 +92,6 @@ public class AuthenticatedUrlController {
         headers.setLocation(URI.create(originUrl.getOriginUrl()));
         return ResponseEntity.status(HttpStatus.FOUND).headers(headers).build();
     }
-
-
 
 
     @Operation(
@@ -97,10 +104,13 @@ public class AuthenticatedUrlController {
             @ApiResponse(responseCode = "401", description = "Não autorizado", content = @Content)
     })
     @GetMapping("/user")
-    public ResponseEntity<List<UserUrlsResponseDTO>> getAllUserUrls(HttpServletRequest request) {
+    public ResponseEntity<Page<UserUrlsResponseDTO>> getAllUserUrls(
+            HttpServletRequest request,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = tokenService.getIdFromToken(authentication);
-        List<UserUrlsResponseDTO> response = authenticatedUrlService.getUrlsFromUser(userId);
+        Page<UserUrlsResponseDTO> response = authenticatedUrlService.getUrlsFromUser(userId, pageable);
         return ResponseEntity.ok().body(response);
     }
 }

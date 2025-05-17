@@ -30,9 +30,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/v1/url").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/url/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/url/auth/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
-                        .requestMatchers("/v3/api-docs").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/api/v1/url/auth").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilterChain, UsernamePasswordAuthenticationFilter.class);

@@ -13,6 +13,8 @@ import com.lynki.lynki.utils.UrlUtilities;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -71,17 +73,15 @@ public class AuthenticatedUrlService {
 
 
 
-    public List<UserUrlsResponseDTO> getUrlsFromUser(String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserException.UserNotFound());
+    public Page<UserUrlsResponseDTO> getUrlsFromUser(String userId, Pageable pageable) {
+        Page<Url> urls = urlRepository.findByUserId(userId, pageable);
 
-        List<Url> urls = urlRepository.findByUserId(userId);
-
-        if (urls.isEmpty()) {
-            return null;
-        }
-
-        List<UserUrlsResponseDTO> userUrls = urls.stream().map(url -> new UserUrlsResponseDTO(url.getOriginUrl(), url.getId(), url.getExpiresAt(), url.getClickCount())).toList();
-        return userUrls;
+        return urls.map(url -> new UserUrlsResponseDTO(
+                url.getOriginUrl(),
+                url.getId(),
+                url.getExpiresAt(),
+                url.getClickCount()
+        ));
     }
 
 
