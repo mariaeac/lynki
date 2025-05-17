@@ -36,9 +36,7 @@ public class AuthService implements UserDetailsService {
 
     public void registerUser(RegisterUserDTO registerUser) {
 
-        if (userRepository.findByUsername(registerUser.username()) != null) {
-           throw new UserException.UsernameAlreadyExists(registerUser.username());
-        }
+        userValidation(registerUser);
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerUser.password());
         userRepository.save(new User(registerUser.username(),encryptedPassword, registerUser.email(), UserRole.USER));
@@ -54,6 +52,16 @@ public class AuthService implements UserDetailsService {
 
         return new LoginResponseDTO(token);
 
+    }
+
+    private void userValidation(RegisterUserDTO registerUser) {
+        if (userRepository.findByUsername(registerUser.username()) != null) {
+            throw new UserException.UsernameAlreadyExists(registerUser.username());
+        }
+
+        if (userRepository.findByEmail(registerUser.email()) != null) {
+            throw new UserException.EmailAlreadyExists();
+        }
     }
 
 
