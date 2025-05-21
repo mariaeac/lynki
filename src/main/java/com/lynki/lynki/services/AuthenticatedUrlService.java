@@ -42,7 +42,7 @@ public class AuthenticatedUrlService {
         if (!user.isPresent()) {
             throw new UserException.UserNotFound();
         }
-
+        
         String id = urlUtils.createUniqueID();
 
         Instant expirationTime = Instant.now().plusSeconds(urlRequest.expirationTime());
@@ -69,10 +69,6 @@ public class AuthenticatedUrlService {
 
         return originUrl;
     }
-
-
-
-
     public Page<UserUrlsResponseDTO> getUrlsFromUser(String userId, Pageable pageable) {
         Page<Url> urls = urlRepository.findByUserId(userId, pageable);
 
@@ -82,6 +78,21 @@ public class AuthenticatedUrlService {
                 url.getExpiresAt(),
                 url.getClickCount()
         ));
+    }
+
+    public void deleteUrlById(String urlId, String userId) {
+        if (!urlRepository.existsById(urlId)) {
+            throw new UrlException.UrlNotFoundException();
+        }
+
+        Url url = urlRepository.findById(urlId).orElseThrow(() -> new UrlException.UrlNotFoundException());
+        if (url.getUserId().equals(userId)) {
+            urlRepository.delete(url);
+        } else {
+            throw new UserException.UserNotFound();
+        }
+
+
     }
 
 

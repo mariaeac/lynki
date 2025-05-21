@@ -113,4 +113,18 @@ public class AuthenticatedUrlController {
         Page<UserUrlsResponseDTO> response = authenticatedUrlService.getUrlsFromUser(userId, pageable);
         return ResponseEntity.ok().body(response);
     }
+
+    @DeleteMapping("/{shortUrl}")
+    public ResponseEntity<Void> deleteUrl(@PathVariable String shortUrl) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = tokenService.getIdFromToken(authentication);
+
+        authenticatedUrlService.deleteUrlById(shortUrl, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
+
 }
