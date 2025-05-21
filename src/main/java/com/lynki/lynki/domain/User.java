@@ -41,6 +41,7 @@ public class User implements UserDetails {
     }
 
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == UserRole.ADMIN) {
@@ -48,6 +49,10 @@ public class User implements UserDetails {
         } else {
             return List.of(new SimpleGrantedAuthority("ROLE_USER"));
         }
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.lynki.lynki.controller;
 import com.lynki.lynki.domain.Url;
 import com.lynki.lynki.domain.dtos.UrlRequestDTO;
 import com.lynki.lynki.domain.dtos.UrlResponseDTO;
+import com.lynki.lynki.domain.dtos.UserResponseDTO;
 import com.lynki.lynki.domain.dtos.UserUrlsResponseDTO;
 import com.lynki.lynki.infra.TokenService;
 import com.lynki.lynki.services.AuthenticatedUrlService;
@@ -103,7 +104,7 @@ public class AuthenticatedUrlController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserUrlsResponseDTO.class))),
             @ApiResponse(responseCode = "401", description = "Não autorizado", content = @Content)
     })
-    @GetMapping("/user")
+    @GetMapping("/urls")
     public ResponseEntity<Page<UserUrlsResponseDTO>> getAllUserUrls(
             HttpServletRequest request,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
@@ -123,6 +124,15 @@ public class AuthenticatedUrlController {
         authenticatedUrlService.deleteUrlById(shortUrl, userId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/user")
+    public ResponseEntity<UserResponseDTO> getUserInfo(HttpServletRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = tokenService.getIdFromToken(authentication);
+        UserResponseDTO response = authenticatedUrlService.getUserInfo(userId);
+        return ResponseEntity.ok().body(response);
+    }
+
 
 
 

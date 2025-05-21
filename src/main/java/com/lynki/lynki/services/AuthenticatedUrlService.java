@@ -4,6 +4,7 @@ import com.lynki.lynki.domain.Url;
 import com.lynki.lynki.domain.User;
 import com.lynki.lynki.domain.dtos.UrlRequestDTO;
 import com.lynki.lynki.domain.dtos.UrlResponseDTO;
+import com.lynki.lynki.domain.dtos.UserResponseDTO;
 import com.lynki.lynki.domain.dtos.UserUrlsResponseDTO;
 import com.lynki.lynki.exceptions.UrlException;
 import com.lynki.lynki.exceptions.UserException;
@@ -42,16 +43,22 @@ public class AuthenticatedUrlService {
         if (!user.isPresent()) {
             throw new UserException.UserNotFound();
         }
-        
-        String id = urlUtils.createUniqueID();
 
-        Instant expirationTime = Instant.now().plusSeconds(urlRequest.expirationTime());
+        String id = urlUtils.createUniqueID();
 
         Url url = new Url();
         url.setId(id);
         url.setOriginUrl(urlRequest.url());
         url.setClickCount(0L);
-        url.setExpiresAt(Instant.from(expirationTime));
+
+        if (urlRequest.expirationTime() == 0) {
+            url.setExpiresAt(null);
+        } else {
+            Instant expirationTime = Instant.now().plusSeconds(urlRequest.expirationTime());
+            url.setExpiresAt(Instant.from(expirationTime));
+        }
+
+
         url.setUserId(userId);
         urlRepository.save(url);
 
@@ -91,9 +98,13 @@ public class AuthenticatedUrlService {
         } else {
             throw new UserException.UserNotFound();
         }
-
-
     }
+
+    public UserResponseDTO getUserInfo(String userId) {
+         User user = userRepository.findById(userId).orElseThrow(() -> new UserException.UserNotFound());
+         return new UserResponseDTO(user.getUsername(), user.getEmail());
+    }
+
 
 
 }
