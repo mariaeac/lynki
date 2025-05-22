@@ -107,14 +107,18 @@ public class AuthenticatedUrlController {
     @GetMapping("/urls")
     public ResponseEntity<Page<UserUrlsResponseDTO>> getAllUserUrls(
             HttpServletRequest request,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable, @RequestParam(required = false) String search
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = tokenService.getIdFromToken(authentication);
-        Page<UserUrlsResponseDTO> response = authenticatedUrlService.getUrlsFromUser(userId, pageable);
+        Page<UserUrlsResponseDTO> response = authenticatedUrlService.getUrlsFromUser(userId, pageable, search);
         return ResponseEntity.ok().body(response);
     }
 
+    @Operation(summary = "Deletar uma URL", description = "Deleta uma URL de um usuário autenticado")
+    @ApiResponses(value = {
+            @ApiResponse( responseCode = "204", description = "URL Deletada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UrlResponseDTO.class))),
+    })
     @DeleteMapping("/{shortUrl}")
     public ResponseEntity<Void> deleteUrl(@PathVariable String shortUrl) {
 
@@ -125,6 +129,7 @@ public class AuthenticatedUrlController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Informações do usuário", description = "Traz informações de nome e e-mail do usuário autenticado")
     @GetMapping("/user")
     public ResponseEntity<UserResponseDTO> getUserInfo(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

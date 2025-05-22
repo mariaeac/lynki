@@ -76,15 +76,27 @@ public class AuthenticatedUrlService {
 
         return originUrl;
     }
-    public Page<UserUrlsResponseDTO> getUrlsFromUser(String userId, Pageable pageable) {
-        Page<Url> urls = urlRepository.findByUserId(userId, pageable);
+    public Page<UserUrlsResponseDTO> getUrlsFromUser(String userId, Pageable pageable, String search) {
 
-        return urls.map(url -> new UserUrlsResponseDTO(
-                url.getOriginUrl(),
-                url.getId(),
-                url.getExpiresAt(),
-                url.getClickCount()
-        ));
+        if (search != null && !search.isEmpty()) {
+            Page<Url> urls =  urlRepository.findByUserIdAndOriginUrlContainingIgnoreCase(userId, search, pageable);
+            return urls.map(url -> new UserUrlsResponseDTO(
+                    url.getOriginUrl(),
+                    url.getId(),
+                    url.getExpiresAt(),
+                    url.getClickCount()));
+        } else {
+
+            Page<Url> urls = urlRepository.findByUserId(userId, pageable);
+
+            return urls.map(url -> new UserUrlsResponseDTO(
+                    url.getOriginUrl(),
+                    url.getId(),
+                    url.getExpiresAt(),
+                    url.getClickCount()
+            ));
+        }
+
     }
 
     public void deleteUrlById(String urlId, String userId) {
