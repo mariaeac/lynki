@@ -7,7 +7,6 @@ import com.lynki.lynki.domain.dtos.UserResponseDTO;
 import com.lynki.lynki.domain.dtos.UserUrlsResponseDTO;
 import com.lynki.lynki.infra.TokenService;
 import com.lynki.lynki.services.AuthenticatedUrlService;
-import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -21,9 +20,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
-import java.util.List;
 
 // OpenAPI imports
 import io.swagger.v3.oas.annotations.Operation;
