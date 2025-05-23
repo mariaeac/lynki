@@ -3,5 +3,5 @@ package com.lynki.lynki.domain.dtos;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
-public record UrlRequestDTO(@NotBlank String url, @Min(0) long expirationTime) {
+public record UrlRequestDTO(@NotBlank String url, String aliasUrl,  @Min(0) long expirationTime) {
 }

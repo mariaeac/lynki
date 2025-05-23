@@ -44,10 +44,27 @@ public class AuthenticatedUrlService {
             throw new UserException.UserNotFound();
         }
 
-        String id = urlUtils.createUniqueID();
+        String shortCode;
+
+
+        if (urlRequest.aliasUrl() != null && !urlRequest.aliasUrl().isEmpty()) {
+
+            if (!urlRequest.aliasUrl().matches("^[a-zA-Z0-9_-]{3,30}$")) {
+                throw new IllegalArgumentException("Alias inválido (somente letras, números, hífen e underline, 3-30 chars)");
+            }
+
+            if (urlRepository.existsById(urlRequest.aliasUrl())) {
+                    throw new IllegalArgumentException("URL Já existe");
+            }
+
+            shortCode = urlRequest.aliasUrl();
+        } else {
+
+            shortCode = urlUtils.createUniqueID();
+        }
 
         Url url = new Url();
-        url.setId(id);
+        url.setId(shortCode);
         url.setOriginUrl(urlRequest.url());
         url.setClickCount(0L);
 
@@ -62,7 +79,7 @@ public class AuthenticatedUrlService {
         url.setUserId(userId);
         urlRepository.save(url);
 
-        String redirectUrl = urlUtils.buildRedirectAuthLink(request,id);
+        String redirectUrl = urlUtils.buildRedirectAuthLink(request, shortCode);
         return new UrlResponseDTO(redirectUrl, url.getClickCount());
     }
 
