@@ -4,9 +4,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.List;
+
 public interface  UrlRepository extends MongoRepository<Url, String> {
 
     Page<Url> findByUserId(String userId, Pageable pageable);
+
+    List<Url> findByUserId(String userId);
 
     Page<Url> findByUserIdAndOriginUrlContainingIgnoreCase(String userId, String searchTerm, Pageable pageable);
 
