@@ -1,12 +1,10 @@
 package com.lynki.lynki.controller;
 
 import com.lynki.lynki.domain.Url;
-import com.lynki.lynki.domain.dtos.UrlRequestDTO;
-import com.lynki.lynki.domain.dtos.UrlResponseDTO;
-import com.lynki.lynki.domain.dtos.UserResponseDTO;
-import com.lynki.lynki.domain.dtos.UserUrlsResponseDTO;
+import com.lynki.lynki.domain.dtos.*;
 import com.lynki.lynki.infra.TokenService;
 import com.lynki.lynki.services.AuthenticatedUrlService;
+import com.lynki.lynki.services.ClickEventService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -21,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
+import java.util.List;
 
 // OpenAPI imports
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,15 +37,17 @@ public class AuthenticatedUrlController {
     private final AuthenticatedUrlService authenticatedUrlService;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final ClickEventService clickEventService;
 
     public AuthenticatedUrlController(
             AuthenticatedUrlService authenticatedUrlService,
             AuthenticationManager authenticationManager,
-            TokenService tokenService
+            TokenService tokenService, ClickEventService clickEventService
     ) {
         this.authenticatedUrlService = authenticatedUrlService;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
+        this.clickEventService = clickEventService;
     }
 
     @Operation(
@@ -84,10 +85,11 @@ public class AuthenticatedUrlController {
     })
 
     @GetMapping("/{id}")
-    public ResponseEntity<Void> redirectAuthUrl(@PathVariable String id) {
+    public ResponseEntity<Void> redirectAuthUrl(@PathVariable String id, HttpServletRequest request) {
         Url originUrl = authenticatedUrlService.redirectOriginUrl(id);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(originUrl.getOriginUrl()));
+        clickEventService.getDeviceData(request, id);
         return ResponseEntity.status(HttpStatus.FOUND).headers(headers).build();
     }
 
@@ -133,6 +135,14 @@ public class AuthenticatedUrlController {
         String userId = tokenService.getIdFromToken(authentication);
         UserResponseDTO response = authenticatedUrlService.getUserInfo(userId);
         return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/analytics/{shortUrl}")
+    public ResponseEntity<List<ClickEventResponseDTO>> getUrlClickEvents(@PathVariable String shortUrl) {
+
+        List<ClickEventResponseDTO> response = clickEventService.getClickEventsByShortUrl(shortUrl);
+        return ResponseEntity.ok().body(response);
+
     }
 
 

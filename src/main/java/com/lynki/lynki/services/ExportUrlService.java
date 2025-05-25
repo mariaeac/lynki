@@ -3,7 +3,7 @@ package com.lynki.lynki.services;
 import com.lynki.lynki.domain.Url;
 import com.lynki.lynki.domain.dtos.UserUrlsResponseDTO;
 import com.lynki.lynki.repository.UrlRepository;
-import org.springframework.data.domain.Page;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,8 +28,6 @@ public class ExportUrlService {
                             url.getClickCount()
                     ))
                     .toList();
-
-
 
     }
 
