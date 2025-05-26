@@ -110,7 +110,10 @@ public class AuthenticatedUrlController {
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = tokenService.getIdFromToken(authentication);
-        Page<UserUrlsResponseDTO> response = authenticatedUrlService.getUrlsFromUser(userId, pageable, search);
+
+        String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
+
+        Page<UserUrlsResponseDTO> response = authenticatedUrlService.getUrlsFromUser(userId, pageable, search, baseUrl);
         return ResponseEntity.ok().body(response);
     }
 

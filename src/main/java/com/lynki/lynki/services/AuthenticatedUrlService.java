@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthenticatedUrlService {
@@ -93,28 +94,27 @@ public class AuthenticatedUrlService {
 
         return originUrl;
     }
-    public Page<UserUrlsResponseDTO> getUrlsFromUser(String userId, Pageable pageable, String search) {
+    public Page<UserUrlsResponseDTO> getUrlsFromUser(String userId, Pageable pageable, String search, String baseUrl) {
 
+        Page<Url> urls;
         if (search != null && !search.isEmpty()) {
-            Page<Url> urls =  urlRepository.findByUserIdAndOriginUrlContainingIgnoreCase(userId, search, pageable);
-            return urls.map(url -> new UserUrlsResponseDTO(
-                    url.getOriginUrl(),
-                    url.getId(),
-                    url.getExpiresAt(),
-                    url.getClickCount()));
+            urls = urlRepository.findByUserIdAndOriginUrlContainingIgnoreCase(userId, search, pageable);
         } else {
-
-            Page<Url> urls = urlRepository.findByUserId(userId, pageable);
-
-            return urls.map(url -> new UserUrlsResponseDTO(
-                    url.getOriginUrl(),
-                    url.getId(),
-                    url.getExpiresAt(),
-                    url.getClickCount()
-            ));
+            urls = urlRepository.findByUserId(userId, pageable);
         }
 
+
+        return urls.map(url -> {
+            String shortUrlPath = baseUrl + "/api/v1/url/auth/" + url.getId();
+            return new UserUrlsResponseDTO(
+                    url.getOriginUrl(),
+                    shortUrlPath,
+                    url.getExpiresAt(),
+                    url.getClickCount()
+            );
+        });
     }
+
 
     public void deleteUrlById(String urlId, String userId) {
         if (!urlRepository.existsById(urlId)) {
