@@ -10,13 +10,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class CorsConfig {
 
-    @Value("${CORS_DOMAIN}")
-    private String domain;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin(domain);
+        configuration.addAllowedOrigin("https://lynki.vercel.app");
+        configuration.addAllowedOrigin("http://localhost:3000/");
         configuration.addAllowedMethod("GET");
         configuration.addAllowedMethod("POST");
         configuration.addAllowedMethod("PUT");
