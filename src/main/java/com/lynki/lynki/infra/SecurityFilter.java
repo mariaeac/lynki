@@ -8,11 +8,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 
 @Component
@@ -20,6 +20,8 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
     private final UserRepository userRepository;
+
+    Logger logger = Logger.getLogger(SecurityFilter.class.getName());
 
     public SecurityFilter(TokenService tokenService, UserRepository userRepository) {
         this.tokenService = tokenService;
@@ -31,8 +33,12 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (token != null) {
 
             String subject = tokenService.validateToken(token);
+            logger.info("Token recebido: " + token);
+            logger.info("Subject do token: " + subject);
             User user = userRepository.findById(subject)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            logger.info("Authorities do usuário: " + user.getAuthorities());
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
