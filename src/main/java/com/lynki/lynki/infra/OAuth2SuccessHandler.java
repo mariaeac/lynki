@@ -1,13 +1,11 @@
 package com.lynki.lynki.infra;
 
 import com.lynki.lynki.domain.User;
-import com.lynki.lynki.domain.dtos.LoginResponseDTO;
 import com.lynki.lynki.domain.enums.UserRole;
 import com.lynki.lynki.repository.UserRepository;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -20,6 +18,9 @@ public class OAuth2SuccessHandler  implements AuthenticationSuccessHandler {
 
     private final TokenService tokenService;
     private final UserRepository userRepository;
+
+    @Value("${FRONT_BASE_URL:http://localhost:3000}")
+    private String baseUrl;
 
     public OAuth2SuccessHandler(TokenService tokenService, UserRepository userRepository) {
         this.tokenService = tokenService;
@@ -38,13 +39,13 @@ public class OAuth2SuccessHandler  implements AuthenticationSuccessHandler {
             User newUser = new User(username, null, email, UserRole.USER );
             userRepository.save(newUser);
             String token = tokenService.generateToken(newUser);
-            String redirectUrl = "http://localhost:3000/oauth2/success?token=" + token;
+            String redirectUrl = baseUrl + "/oauth2/success?token=" + token;
 
             response.sendRedirect(redirectUrl);
 
         } else {
             String token = tokenService.generateToken(user);
-            String redirectUrl = "http://localhost:3000/oauth2/success?token=" + token;
+            String redirectUrl = baseUrl + "/oauth2/success?token=" + token;
 
             response.sendRedirect(redirectUrl);
         }
