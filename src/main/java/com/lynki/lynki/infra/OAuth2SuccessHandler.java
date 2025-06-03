@@ -1,0 +1,57 @@
+package com.lynki.lynki.infra;
+
+import com.lynki.lynki.domain.User;
+import com.lynki.lynki.domain.dtos.LoginResponseDTO;
+import com.lynki.lynki.domain.enums.UserRole;
+import com.lynki.lynki.repository.UserRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+@Component
+public class OAuth2SuccessHandler  implements AuthenticationSuccessHandler {
+
+    private final TokenService tokenService;
+    private final UserRepository userRepository;
+
+    public OAuth2SuccessHandler(TokenService tokenService, UserRepository userRepository) {
+        this.tokenService = tokenService;
+        this.userRepository = userRepository;
+    }
+
+  @Override
+  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                      Authentication authentication) throws IOException {
+
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        String email = oAuth2User.getAttribute("email");
+        String username = oAuth2User.getAttribute("given_name");
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            User newUser = new User(username, null, email, UserRole.USER );
+            userRepository.save(newUser);
+            String token = tokenService.generateToken(newUser);
+            String redirectUrl = "http://localhost:3000/oauth2/success?token=" + token;
+
+            response.sendRedirect(redirectUrl);
+
+        } else {
+            String token = tokenService.generateToken(user);
+            String redirectUrl = "http://localhost:3000/oauth2/success?token=" + token;
+
+            response.sendRedirect(redirectUrl);
+        }
+
+
+
+
+
+  }
+}
