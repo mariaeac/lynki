@@ -78,21 +78,6 @@ public class AuthenticatedUrlController {
     }
 
 
-    @Operation(summary = "Redirecionar para a URL original (usuários autenticados)", description = "Redireciona para a URL original a partir do identificador encurtado")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "302", description = "Redirecionamento para a URL original", content = @Content),
-            @ApiResponse(responseCode = "404", description = "URL não encontrada", content = @Content)
-    })
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Void> redirectAuthUrl(@PathVariable String id, HttpServletRequest request) {
-        Url originUrl = authenticatedUrlService.redirectOriginUrl(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(originUrl.getOriginUrl()));
-        clickEventService.getDeviceData(request, id);
-        return ResponseEntity.status(HttpStatus.FOUND).headers(headers).build();
-    }
-
 
     @Operation(
             summary = "Listar URLs do usuário autenticado",
