@@ -37,10 +37,12 @@ public class Url {
     @LastModifiedDate
     private Instant lastModifiedAt;
 
+    private Boolean isPrivate;
+
     public Url() {
 
     }
-    public Url(String id, String originUrl, Instant expiresAt, Long clickCount, String userId, Instant createdAt, Instant lastModifiedAt) {
+    public Url(String id, String originUrl, Instant expiresAt, Long clickCount, String userId, Instant createdAt, Instant lastModifiedAt, Boolean isPrivate) {
         this.id = id;
         this.originUrl = originUrl;
         this.expiresAt = expiresAt;
@@ -48,6 +50,7 @@ public class Url {
         this.userId = userId;
         this.createdAt = createdAt;
         this.lastModifiedAt = lastModifiedAt;
+        this.isPrivate = isPrivate;
     }
 
     public String getId() {
@@ -80,6 +83,14 @@ public class Url {
 
     public void setClickCount(@Min(value = 0, message = "Contador de cliques não pode ter valor negativo.") Long clickCount) {
         this.clickCount = clickCount;
+    }
+
+  public boolean isPrivate() {
+        return isPrivate;
+  }
+
+    public void setPrivate(Boolean aPrivate) {
+        this.isPrivate = aPrivate;
     }
 
     public String getUserId() {

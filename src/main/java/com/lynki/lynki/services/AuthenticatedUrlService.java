@@ -68,6 +68,7 @@ public class AuthenticatedUrlService {
         url.setId(shortCode);
         url.setOriginUrl(urlRequest.url());
         url.setClickCount(0L);
+        url.setPrivate(true);
 
         if (urlRequest.expirationTime() == 0) {
             url.setExpiresAt(null);
@@ -80,7 +81,7 @@ public class AuthenticatedUrlService {
         url.setUserId(userId);
         urlRepository.save(url);
 
-        String redirectUrl = urlUtils.buildRedirectAuthLink(request, shortCode);
+        String redirectUrl = urlUtils.buildRedirectLink(request, shortCode);
         return new UrlResponseDTO(redirectUrl, url.getClickCount());
     }
 
@@ -105,7 +106,7 @@ public class AuthenticatedUrlService {
 
 
         return urls.map(url -> {
-            String shortUrlPath = baseUrl + "/api/v1/url/auth/" + url.getId();
+            String shortUrlPath = baseUrl + "/" + url.getId();
             return new UserUrlsResponseDTO(
                     url.getOriginUrl(),
                     shortUrlPath,

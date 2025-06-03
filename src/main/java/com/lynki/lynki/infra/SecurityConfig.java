@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/v1/url").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/url/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/url/auth/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
@@ -39,8 +39,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/preview").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/error").permitAll()
-
                         .requestMatchers(HttpMethod.POST, "/api/v1/url/auth").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilterChain, UsernamePasswordAuthenticationFilter.class);

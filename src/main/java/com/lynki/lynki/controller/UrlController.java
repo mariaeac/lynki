@@ -58,26 +58,4 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @Operation(
-            summary = "Redirecionar para a URL original",
-            description = "Redireciona para a URL original a partir do identificador encurtado."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "302", description = "Redirecionamento para a URL original", content = @Content),
-            @ApiResponse(responseCode = "404", description = "URL não encontrada", content = @Content)
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<Void> redirect(
-            @Parameter(
-                    description = "Identificador da URL encurtada",
-                    required = true,
-                    example = "abc123"
-            )
-            @PathVariable String id
-    ) {
-        Url originUrl = urlService.redirectOriginUrl(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(originUrl.getOriginUrl()));
-        return ResponseEntity.status(HttpStatus.FOUND).headers(headers).build();
-    }
 }
