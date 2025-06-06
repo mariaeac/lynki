@@ -7,11 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Component
 public class OAuth2SuccessHandler  implements AuthenticationSuccessHandler {
@@ -31,10 +33,26 @@ public class OAuth2SuccessHandler  implements AuthenticationSuccessHandler {
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                       Authentication authentication) throws IOException {
 
+        Map<String, String> usernameAttributes = Map.of(
+                "google", "given_name",
+                "github", "name",
+                "discord", "username"
+        );
+
+
+        String registrationId = null;
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String email = oAuth2User.getAttribute("email");
-        String username = oAuth2User.getAttribute("given_name");
-        User user = userRepository.findByEmail(email);
+
+      if (authentication instanceof OAuth2AuthenticationToken) {
+          registrationId = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
+      }
+
+      String usernameAttribute = usernameAttributes.getOrDefault(registrationId, "name");
+      String username = oAuth2User.getAttribute(usernameAttribute);
+
+      String email = oAuth2User.getAttribute("email");
+
+      User user = userRepository.findByEmail(email);
         if (user == null) {
             User newUser = new User(username, null, email, UserRole.USER );
             userRepository.save(newUser);
@@ -49,10 +67,6 @@ public class OAuth2SuccessHandler  implements AuthenticationSuccessHandler {
 
             response.sendRedirect(redirectUrl);
         }
-
-
-
-
-
   }
+
 }
